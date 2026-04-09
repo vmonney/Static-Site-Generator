@@ -1,1 +1,1 @@
-python3 src/main.py
+uv run python src/main.py

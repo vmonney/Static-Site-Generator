@@ -1,0 +1,14 @@
+[project]
+name = "static-site-generator"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = ["ruff>=0.8"]
+
+[tool.ruff]
+target-version = "py313"
+
+[tool.uv]
+package = false

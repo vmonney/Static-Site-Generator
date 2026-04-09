@@ -1,1 +1,8 @@
 __pycache__/
+.venv/
+
+# Ruff
+.ruff_cache/
+
+# macOS
+.DS_Store
