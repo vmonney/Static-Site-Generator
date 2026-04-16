@@ -1,8 +1,12 @@
 import unittest
 
 from inline_markdown import (
+    BlockType,
+    block_to_block_type,
     extract_markdown_images,
     extract_markdown_links,
+    markdown_to_blocks,
+    markdown_to_html_node,
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
@@ -622,6 +626,224 @@ class TestTextToTextnodes(unittest.TestCase):
     def test_unclosed_bold_raises(self):
         with self.assertRaises(ValueError):
             text_to_textnodes("**no close")
+
+
+class TestMarkdownToBlocks(unittest.TestCase):
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_empty_and_whitespace_only(self):
+        self.assertEqual(markdown_to_blocks(""), [])
+        self.assertEqual(markdown_to_blocks("   \n\n  \n  "), [])
+
+    def test_strips_blocks_and_drops_extra_blank_lines(self):
+        md = "\n\n# Heading\n\n\nPara one.\n\n\n\nPara two.\n"
+        self.assertEqual(
+            markdown_to_blocks(md),
+            ["# Heading", "Para one.", "Para two."],
+        )
+
+    def test_single_block_no_double_newline(self):
+        self.assertEqual(markdown_to_blocks("one line"), ["one line"])
+
+
+class TestBlockToBlockType(unittest.TestCase):
+    def test_paragraph_plain(self):
+        self.assertEqual(block_to_block_type("Hello world."), BlockType.PARAGRAPH)
+
+    def test_paragraph_when_no_space_after_hashes(self):
+        self.assertEqual(block_to_block_type("#not-a-heading"), BlockType.PARAGRAPH)
+
+    def test_paragraph_when_too_many_hashes(self):
+        self.assertEqual(
+            block_to_block_type("####### seven hashes is not a heading"),
+            BlockType.PARAGRAPH,
+        )
+
+    def test_heading_levels_one_through_six(self):
+        for n in range(1, 7):
+            hashes = "#" * n
+            self.assertEqual(
+                block_to_block_type(f"{hashes} Title text"),
+                BlockType.HEADING,
+                msg=f"level {n}",
+            )
+
+    def test_code_block_empty_body(self):
+        self.assertEqual(block_to_block_type("```\n```"), BlockType.CODE)
+
+    def test_code_block_with_content(self):
+        block = "```\nline1\nline2\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+
+    def test_not_code_without_newline_after_opening_fence(self):
+        self.assertEqual(block_to_block_type("```inline```"), BlockType.PARAGRAPH)
+
+    def test_not_code_without_closing_fence(self):
+        self.assertEqual(block_to_block_type("```\nno close"), BlockType.PARAGRAPH)
+
+    def test_quote_single_line(self):
+        self.assertEqual(block_to_block_type("> quoted"), BlockType.QUOTE)
+
+    def test_quote_space_after_gt_optional(self):
+        self.assertEqual(block_to_block_type(">tight\n> loose"), BlockType.QUOTE)
+
+    def test_quote_multiline(self):
+        block = "> first\n> second\n> third"
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+
+    def test_not_quote_if_any_line_missing_gt(self):
+        self.assertEqual(
+            block_to_block_type("> one\nnot quoted"),
+            BlockType.PARAGRAPH,
+        )
+
+    def test_unordered_list_single_item(self):
+        self.assertEqual(block_to_block_type("- item"), BlockType.UNORDERED_LIST)
+
+    def test_unordered_list_multiple_items(self):
+        block = "- a\n- b\n- c"
+        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+
+    def test_not_unordered_without_space_after_hyphen(self):
+        self.assertEqual(block_to_block_type("-no space"), BlockType.PARAGRAPH)
+
+    def test_ordered_list_single_line(self):
+        self.assertEqual(block_to_block_type("1. first"), BlockType.ORDERED_LIST)
+
+    def test_ordered_list_increments(self):
+        block = "1. a\n2. b\n3. c"
+        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+
+    def test_not_ordered_when_not_starting_at_one(self):
+        self.assertEqual(block_to_block_type("2. wrong"), BlockType.PARAGRAPH)
+
+    def test_not_ordered_when_sequence_breaks(self):
+        self.assertEqual(
+            block_to_block_type("1. a\n3. skipped"),
+            BlockType.PARAGRAPH,
+        )
+
+    def test_empty_block_is_paragraph(self):
+        self.assertEqual(block_to_block_type(""), BlockType.PARAGRAPH)
+
+    def test_markdown_to_blocks_then_block_types(self):
+        md = """# Title
+
+A paragraph.
+
+```
+code
+```
+
+> quote
+
+- u1
+- u2
+
+1. o1
+2. o2
+"""
+        blocks = markdown_to_blocks(md)
+        types = [block_to_block_type(b) for b in blocks]
+        self.assertEqual(
+            types,
+            [
+                BlockType.HEADING,
+                BlockType.PARAGRAPH,
+                BlockType.CODE,
+                BlockType.QUOTE,
+                BlockType.UNORDERED_LIST,
+                BlockType.ORDERED_LIST,
+            ],
+        )
+
+
+class TestMarkdownToHTMLNode(unittest.TestCase):
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+    def test_codeblock(self):
+        md = """
+```
+This is text that _should_ remain
+the **same** even with inline stuff
+```
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+        )
+
+    def test_heading_levels(self):
+        md = "# One\n\n## Two\n\n###### Six"
+        node = markdown_to_html_node(md)
+        self.assertEqual(
+            node.to_html(),
+            "<div><h1>One</h1><h2>Two</h2><h6>Six</h6></div>",
+        )
+
+    def test_blockquote(self):
+        md = "> line **one**\n> line two"
+        node = markdown_to_html_node(md)
+        self.assertEqual(
+            node.to_html(),
+            "<div><blockquote><p>line <b>one</b> line two</p></blockquote></div>",
+        )
+
+    def test_unordered_list(self):
+        md = "- **a**\n- b"
+        node = markdown_to_html_node(md)
+        self.assertEqual(
+            node.to_html(),
+            "<div><ul><li><b>a</b></li><li>b</li></ul></div>",
+        )
+
+    def test_ordered_list(self):
+        md = "1. first\n2. second"
+        node = markdown_to_html_node(md)
+        self.assertEqual(
+            node.to_html(),
+            "<div><ol><li>first</li><li>second</li></ol></div>",
+        )
+
+    def test_empty_document(self):
+        node = markdown_to_html_node("")
+        self.assertEqual(node.to_html(), "<div></div>")
 
 
 if __name__ == "__main__":
