@@ -23,11 +23,11 @@ class TestGeneratePagesRecursive(unittest.TestCase):
             temp_path = Path(temp_dir)
             content_dir = temp_path / "content"
             nested_dir = content_dir / "blog"
-            public_dir = temp_path / "public"
+            docs_dir = temp_path / "docs"
             template_path = temp_path / "template.html"
 
             nested_dir.mkdir(parents=True)
-            public_dir.mkdir()
+            docs_dir.mkdir()
 
             (content_dir / "index.md").write_text("# Home\nWelcome")
             (nested_dir / "about.md").write_text("# About\nAll about this site")
@@ -36,16 +36,41 @@ class TestGeneratePagesRecursive(unittest.TestCase):
             )
 
             generate_pages_recursive(
-                str(content_dir), str(template_path), str(public_dir)
+                str(content_dir), str(template_path), str(docs_dir), "/"
             )
 
-            root_output = public_dir / "index.html"
-            nested_output = public_dir / "blog" / "about.html"
+            root_output = docs_dir / "index.html"
+            nested_output = docs_dir / "blog" / "about.html"
 
             self.assertTrue(root_output.exists())
             self.assertTrue(nested_output.exists())
             self.assertIn("<title>Home</title>", root_output.read_text())
             self.assertIn("<title>About</title>", nested_output.read_text())
+
+    def test_rewrites_root_relative_urls_with_basepath(self):
+        with TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            content_dir = temp_path / "content"
+            docs_dir = temp_path / "docs"
+            template_path = temp_path / "template.html"
+
+            content_dir.mkdir(parents=True)
+            docs_dir.mkdir()
+            (content_dir / "index.md").write_text("# Home\nWelcome")
+            template_path.write_text(
+                '<a href="/posts">Posts</a><img src="/img/logo.png">{{ Content }}'
+            )
+
+            generate_pages_recursive(
+                str(content_dir),
+                str(template_path),
+                str(docs_dir),
+                "/Static-Site-Generator/",
+            )
+
+            output = (docs_dir / "index.html").read_text()
+            self.assertIn('href="/Static-Site-Generator/posts"', output)
+            self.assertIn('src="/Static-Site-Generator/img/logo.png"', output)
 
 
 if __name__ == "__main__":

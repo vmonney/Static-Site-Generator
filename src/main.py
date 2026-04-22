@@ -1,10 +1,11 @@
 import os
+import sys
 
 from copystatic import copy_files_recursive
 from inline_markdown import markdown_to_html_node
 
 STATIC_DIR = "static"
-PUBLIC_DIR = "public"
+DOCS_DIR = "docs"
 CONTENT_DIR = "content"
 TEMPLATE_FILE = "template.html"
 
@@ -16,12 +17,14 @@ def extract_title(markdown: str) -> str:
     raise Exception("No h1 header found")
 
 
-def generate_pages(content_dir: str, template_path: str, public_dir: str) -> None:
-    generate_pages_recursive(content_dir, template_path, public_dir)
+def generate_pages(
+    content_dir: str, template_path: str, docs_dir: str, basepath: str
+) -> None:
+    generate_pages_recursive(content_dir, template_path, docs_dir, basepath)
 
 
 def generate_pages_recursive(
-    dir_path_content: str, template_path: str, dest_dir_path: str
+    dir_path_content: str, template_path: str, dest_dir_path: str, basepath: str
 ) -> None:
     for entry in os.listdir(dir_path_content):
         source_path = os.path.join(dir_path_content, entry)
@@ -30,14 +33,16 @@ def generate_pages_recursive(
                 continue
             destination_file = f"{os.path.splitext(entry)[0]}.html"
             destination_path = os.path.join(dest_dir_path, destination_file)
-            generate_page(source_path, template_path, destination_path)
+            generate_page(source_path, template_path, destination_path, basepath)
             continue
 
         destination_dir = os.path.join(dest_dir_path, entry)
-        generate_pages_recursive(source_path, template_path, destination_dir)
+        generate_pages_recursive(source_path, template_path, destination_dir, basepath)
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
+def generate_page(
+    from_path: str, template_path: str, dest_path: str, basepath: str
+) -> None:
     print(
         f"Generating page from {from_path} to {dest_path} using {template_path}"
     )
@@ -54,6 +59,9 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
     full_html = template.replace("{{ Title }}", title).replace(
         "{{ Content }}", content_html
     )
+    full_html = full_html.replace('href="/', f'href="{basepath}').replace(
+        'src="/', f'src="{basepath}'
+    )
 
     destination_dir = os.path.dirname(dest_path)
     if destination_dir != "":
@@ -64,15 +72,16 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
 
 
 def main():
+    basepath = sys.argv[1] if len(sys.argv) > 1 else "/"
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     static_source_path = os.path.join(project_root, STATIC_DIR)
-    public_dest_path = os.path.join(project_root, PUBLIC_DIR)
+    docs_dest_path = os.path.join(project_root, DOCS_DIR)
     content_path = os.path.join(project_root, CONTENT_DIR)
     template_path = os.path.join(project_root, TEMPLATE_FILE)
 
-    print(f"Copying static files from {static_source_path} to {public_dest_path}")
-    copy_files_recursive(static_source_path, public_dest_path)
-    generate_pages_recursive(content_path, template_path, public_dest_path)
+    print(f"Copying static files from {static_source_path} to {docs_dest_path}")
+    copy_files_recursive(static_source_path, docs_dest_path)
+    generate_pages_recursive(content_path, template_path, docs_dest_path, basepath)
 
 
 if __name__ == "__main__":
