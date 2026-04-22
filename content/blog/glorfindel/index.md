@@ -1,12 +1,10 @@
 # Why Glorfindel is More Impressive than Legolas
 
-[< Back Home](/)
-
 ![Glorfindel image](/images/glorfindel.png)
 
 > "The deeds of Glorfindel shine bright as the morning sun, whilst the feats of others are as the flickering of stars in the night sky."
 
-In J.R.R. Tolkien's legendarium, characterized by its rich tapestry of noble heroes and epic deeds, two Elven luminaries stand out: **Glorfindel**, the stalwart warrior returned from the Halls of Mandos, and **Legolas**, the prince of the Woodland Realm. While both possess grace and valor beyond mortal ken, it is Glorfindel who emerges as the more compelling figure, a beacon of heroism whose legacy spans ages.
+In J.R.R. Tolkien's legendarium, two Elven luminaries stand out: **Glorfindel**, the warrior returned from the Halls of Mandos, and **Legolas**, the prince of the Woodland Realm. While both possess grace and valor beyond mortal ken, Glorfindel emerges as the more compelling figure, a beacon of heroism whose legacy spans ages.
 
 ## Introduction
 

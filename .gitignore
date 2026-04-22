@@ -1,7 +1,31 @@
+# Python
 __pycache__/
-.venv/
-# Ruff
-.ruff_cache/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+dist/
 
-# macOS
+# Environments
+.venv/
+.env
+.env.*
+
+# Tooling caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS
 .DS_Store
+Thumbs.db
+
+# AI assistant notes (local only)
+CLAUDE.md

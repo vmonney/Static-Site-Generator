@@ -10,6 +10,43 @@ body {
   margin-right: auto;
 }
 
+.site-header {
+  border-bottom: 1px solid #3c3c42;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.site-nav a {
+  background-color: #2e2c35;
+  border: 1px solid #3c3c42;
+  border-radius: 6px;
+  color: #dda15e;
+  padding: 6px 10px;
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  border-color: #f4a261;
+  color: #f4a261;
+}
+
+.repo-banner {
+  color: #ddd;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.repo-banner a {
+  border-bottom-width: 1px;
+}
+
 b {
   font-weight: 900;
 }
