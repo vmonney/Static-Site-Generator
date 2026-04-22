@@ -158,7 +158,7 @@ def _quote_block_to_html_node(block):
         rest = line[1:] if line.startswith(">") else line
         stripped.append(rest.lstrip())
     inner = _collapse_whitespace("\n".join(stripped))
-    return ParentNode("blockquote", [_paragraph_block_to_html_node(inner)])
+    return ParentNode("blockquote", text_to_children(inner))
 
 
 def _unordered_list_block_to_html_node(block):

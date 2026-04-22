@@ -822,7 +822,7 @@ the **same** even with inline stuff
         node = markdown_to_html_node(md)
         self.assertEqual(
             node.to_html(),
-            "<div><blockquote><p>line <b>one</b> line two</p></blockquote></div>",
+            "<div><blockquote>line <b>one</b> line two</blockquote></div>",
         )
 
     def test_unordered_list(self):
