@@ -4,16 +4,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>About This Site</title>
-    <link href="/index.css" rel="stylesheet" />
+    <link href="/Static-Site-Generator/index.css" rel="stylesheet" />
   </head>
 
   <body>
     <header class="site-header">
       <nav class="site-nav">
-        <a href="/">Home</a>
-        <a href="/blog/majesty/">Blog</a>
-        <a href="/contact/">Contact</a>
-        <a href="/about/">About</a>
+        <a href="/Static-Site-Generator/">Home</a>
+        <a href="/Static-Site-Generator/blog/majesty/">Blog</a>
+        <a href="/Static-Site-Generator/contact/">Contact</a>
+        <a href="/Static-Site-Generator/about/">About</a>
       </nav>
       <p class="repo-banner">
         Built with a custom Python static site generator -
@@ -25,6 +25,6 @@
         >
       </p>
     </header>
-    <article><div><h1>About This Site</h1><p>This website is both a Tolkien-themed blog and a live demonstration of my Python static site generator.</p><h2>Project snapshot</h2><ul><li>Repository: <a href="https://github.com/vmonney/Static-Site-Generator">Static-Site-Generator</a></li><li>Language: <code>Python 3.13</code></li><li>Tooling: <code>uv</code>, Ruff, <code>unittest</code></li><li>Deployment target: GitHub Pages from the <code>docs/</code> folder</li></ul><h2>Supported Markdown features</h2><p>The generator currently supports:</p><ol><li>Headings (<code>#</code>, <code>##</code>, <code>###</code>)</li><li><b>Bold</b>, <i>italic</i>, and <code>inline code</code></li><li>Code blocks</li><li>Links and images</li><li>Blockquotes</li><li>Ordered and unordered lists</li></ol><h3>Example code block</h3><p><code></code><code>python def build_site(basepath: str = "/") -> None: print(f"Building site with basepath={basepath}") </code><code></code></p><h3>Example quote</h3><blockquote>"Not all those who wander are lost." -- J.R.R. Tolkien</blockquote><h2>How generation works</h2><p>The pipeline turns Markdown text into HTML using intermediate nodes:</p><p><code></code><code>text Markdown (.md files in content/) -> inline/block parsing -> TextNode representation -> HTMLNode tree -> rendered HTML in docs/ </code><code></code></p><p>Core implementation is in <code>src/main.py</code> with support modules in <code>src/</code>.</p><h2>Commands I use</h2><ul><li>Local build and preview: <code>bash main.sh</code></li><li>Run tests: <code>bash test.sh</code></li><li>GitHub Pages build: <code>./build.sh</code></li></ul><p>If you want to browse the generated pages directly, open <a href="/">Home</a> or <a href="/contact/">Contact</a>.</p></div></article>
+    <article><div><h1>About This Site</h1><p>This website is both a Tolkien-themed blog and a live demonstration of my Python static site generator.</p><h2>Project snapshot</h2><ul><li>Repository: <a href="https://github.com/vmonney/Static-Site-Generator">Static-Site-Generator</a></li><li>Language: <code>Python 3.13</code></li><li>Tooling: <code>uv</code>, Ruff, <code>unittest</code></li><li>Deployment target: GitHub Pages from the <code>docs/</code> folder</li></ul><h2>Supported Markdown features</h2><p>The generator currently supports:</p><ol><li>Headings (<code>#</code>, <code>##</code>, <code>###</code>)</li><li><b>Bold</b>, <i>italic</i>, and <code>inline code</code></li><li>Code blocks</li><li>Links and images</li><li>Blockquotes</li><li>Ordered and unordered lists</li></ol><h3>Example code block</h3><p><code></code><code>python def build_site(basepath: str = "/") -> None: print(f"Building site with basepath={basepath}") </code><code></code></p><h3>Example quote</h3><blockquote>"Not all those who wander are lost." -- J.R.R. Tolkien</blockquote><h2>How generation works</h2><p>The pipeline turns Markdown text into HTML using intermediate nodes:</p><p><code></code><code>text Markdown (.md files in content/) -> inline/block parsing -> TextNode representation -> HTMLNode tree -> rendered HTML in docs/ </code><code></code></p><p>Core implementation is in <code>src/main.py</code> with support modules in <code>src/</code>.</p><h2>Commands I use</h2><ul><li>Local build and preview: <code>bash main.sh</code></li><li>Run tests: <code>bash test.sh</code></li><li>GitHub Pages build: <code>./build.sh</code></li></ul><p>If you want to browse the generated pages directly, open <a href="/Static-Site-Generator/">Home</a> or <a href="/Static-Site-Generator/contact/">Contact</a>.</p></div></article>
   </body>
 </html>
